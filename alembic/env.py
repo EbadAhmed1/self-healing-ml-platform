@@ -17,8 +17,14 @@ from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
-# Load .env from project root (two levels up from alembic/)
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+import sys
+
+# Ensure project root is in sys.path so 'app' package is importable
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Load .env from project root (override shell session env vars if present)
+load_dotenv(PROJECT_ROOT / ".env", override=True)
 
 # Override the sqlalchemy.url from alembic.ini with the real env var
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
@@ -34,7 +40,7 @@ import app.db_models  # noqa: F401, E402 — registers Prediction with Base.meta
 
 # Alembic Config object
 config = context.config
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
+config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
 
 # Set up Python logging from alembic.ini
 if config.config_file_name is not None:
