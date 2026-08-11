@@ -45,10 +45,23 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
     from app.config import get_settings
 
     settings = get_settings()
-    if not settings.use_hf_hub:
+
+    log.info(
+        "HF Hub download check — model_name=%s | use_hf_hub=%s | hf_repo_id='%s'",
+        model_name,
+        settings.use_hf_hub,
+        settings.hf_repo_id,
+    )
+
+    # Automatically fetch if hf_repo_id is provided OR use_hf_hub is True
+    repo_id = settings.hf_repo_id.strip() if settings.hf_repo_id else ""
+    if not settings.use_hf_hub and not repo_id:
+        log.info(
+            "HF Hub integration not enabled (use_hf_hub=False, hf_repo_id is empty)."
+        )
         return
 
-    if not settings.hf_repo_id:
+    if not repo_id:
         log.warning(
             "USE_HF_HUB is set to True, but HF_REPO_ID is empty! "
             "Set HF_REPO_ID in your environment variables on Render (e.g. ebadahmdd/self-healing-ml-platform-models)."
@@ -59,13 +72,11 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
         import shutil
         from huggingface_hub import hf_hub_download
 
-        token = settings.hf_hub_token or None
-        log.info(
-            "Fetching pointer for %s from HF Hub: %s", model_name, settings.hf_repo_id
-        )
+        token = settings.hf_hub_token.strip() if settings.hf_hub_token else None
+        log.info("Fetching pointer for %s from HF Hub: %s", model_name, repo_id)
 
         pointer_file = hf_hub_download(
-            repo_id=settings.hf_repo_id,
+            repo_id=repo_id,
             filename=f"{model_name}/{CURRENT_VERSION_FILENAME}",
             token=token,
         )
@@ -78,7 +89,7 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
         version = pointer["version"]
 
         artifact_file = hf_hub_download(
-            repo_id=settings.hf_repo_id,
+            repo_id=repo_id,
             filename=f"{model_name}/{version}/{ARTIFACT_FILENAME}",
             token=token,
         )
@@ -90,7 +101,7 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
         log.error(
             "Hugging Face Hub fetch failed for %s from %s: %s",
             model_name,
-            settings.hf_repo_id,
+            repo_id,
             exc,
             exc_info=True,
         )
