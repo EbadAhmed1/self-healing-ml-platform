@@ -1,0 +1,5 @@
+# /data/raw/.gitkeep
+# Place the Telco Customer Churn CSV here before running models/train.py
+# Expected filename: WA_Fn-UseC_-Telco-Customer-Churn.csv
+# Download from: https://www.kaggle.com/datasets/blastchar/telco-customer-churn
+# This directory is gitignored for data files (*.csv); only this .gitkeep is tracked.

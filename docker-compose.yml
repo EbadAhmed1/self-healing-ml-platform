@@ -1,0 +1,37 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# docker-compose.yml — LOCAL DEVELOPMENT ONLY
+#
+# Spins up a bare Postgres instance for local dev.
+# The FastAPI app and Streamlit dashboard are NOT containerised here;
+# they run directly in your virtual environment (Phase 0 scope).
+#
+# Usage:
+#   docker compose up -d          # start Postgres in the background
+#   docker compose down           # stop and remove containers
+#   docker compose down -v        # also wipe the database volume
+# ═══════════════════════════════════════════════════════════════════════════
+
+services:
+  postgres:
+    image: postgres:16-alpine          # lightweight, pinned major version
+    container_name: mlplatform_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mluser
+      POSTGRES_PASSWORD: mlpassword
+      POSTGRES_DB: mlplatform
+    ports:
+      - "5432:5432"                    # expose to localhost for SQLAlchemy
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mluser -d mlplatform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

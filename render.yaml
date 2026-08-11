@@ -1,0 +1,27 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Render Deployment Specification (render.yaml)
+# ──────────────────────────────────────────────────────────────────────────────
+services:
+  - type: web
+    name: self-healing-ml-platform
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: USE_HF_HUB
+        value: "false"
+      - key: HF_REPO_ID
+        sync: false
+      - key: HF_HUB_TOKEN
+        sync: false

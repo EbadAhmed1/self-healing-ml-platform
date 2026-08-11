@@ -1,0 +1,36 @@
+name: Scheduled Gated Retraining Job
+
+on:
+  schedule:
+    # Run every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-retraining:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Gated Production Retraining (churn-model)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python models/retrain.py --model-name churn-model
+
+      - name: Check & Manage Canary Deployment Status (churn-model)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python models/canary_manager.py --model-name churn-model

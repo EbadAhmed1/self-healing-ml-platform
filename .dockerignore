@@ -1,0 +1,22 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Docker Build Exclusion (.dockerignore)
+# ──────────────────────────────────────────────────────────────────────────────
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.git/
+.gitignore
+.github/
+.env
+*.log
+data/raw/
+models/artifacts/*/*.joblib
+!models/artifacts/*/.gitkeep
+tests/
+dashboard/

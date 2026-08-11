@@ -1,0 +1,31 @@
+# ─────────────────────────────────────────────
+# Runtime dependencies — self-healing ML serving platform
+# Pin exact versions for reproducibility.
+# ─────────────────────────────────────────────
+
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+
+# Database / ORM / migrations
+sqlalchemy==2.0.31
+alembic==1.13.2
+psycopg2-binary==2.9.9
+
+# ML
+scikit-learn==1.5.1
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
+scipy==1.13.1           # statistical tests in simulator + drift detection
+
+# Config / env
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.3.4
+
+# Monitoring dashboard (Streamlit lives in /dashboard but shares the venv)
+streamlit==1.36.0
+
+# HTTP client (used by monitoring jobs to ping the serving API)
+httpx==0.27.0

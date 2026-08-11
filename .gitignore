@@ -1,0 +1,72 @@
+# ─── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Virtual environment ────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ─── Environment / secrets ─────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Model artifacts ────────────────────────────────────────────────────────
+# Only training CODE is committed; serialised models are excluded.
+models/artifacts/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pt
+*.pth
+
+# ─── Alembic ────────────────────────────────────────────────────────────────
+# Keep the alembic/ directory but ignore the local SQLite fallback db
+*.db
+*.sqlite3
+
+# ─── Testing / coverage ────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ─── Linting ────────────────────────────────────────────────────────────────
+.ruff_cache/
+.mypy_cache/
+
+# ─── macOS ──────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─── IDEs ───────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── Streamlit ──────────────────────────────────────────────────────────────
+.streamlit/secrets.toml
+
+# ─── Data ───────────────────────────────────────────────────────────────────
+# Raw data files are gitignored — only the directory structure is tracked.
+data/raw/*.csv
+data/raw/*.parquet
+data/raw/*.json
+data/processed/
+
+# ─── Logs ───────────────────────────────────────────────────────────────────
+*.log
+logs/

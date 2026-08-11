@@ -1,0 +1,11 @@
+# /alembic/README
+Alembic migration environment for the self-healing ML serving platform.
+
+Phase 0: directory created; env.py and initial migration added in Phase 1
+when the first SQLAlchemy models are defined.
+
+Common commands:
+  alembic revision --autogenerate -m "description"   # create a migration
+  alembic upgrade head                               # apply all migrations
+  alembic downgrade -1                               # roll back one step
+  alembic history                                    # show migration history
