@@ -240,7 +240,7 @@ def train(data_path: Path, version: str, save_sim_split_flag: bool = False) -> N
     y = df[TARGET_COL]
 
     log.info("Class distribution: %s", y.value_counts().to_dict())
-    churn_rate = y.mean()
+    churn_rate = float(y.mean())
     log.info(
         "Churn rate: %.1f%% — WHY ACCURACY ALONE MISLEADS: a trivial model "
         "that always predicts 'No Churn' would score %.1f%% accuracy while "

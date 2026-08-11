@@ -55,8 +55,18 @@ def preprocess_raw(df: pd.DataFrame) -> pd.DataFrame:
         df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
 
     if TARGET_COL in df.columns:
-        if df[TARGET_COL].dtype == object or df[TARGET_COL].dtype == str:
-            df[TARGET_COL] = df[TARGET_COL].map({"Yes": 1, "No": 0})
+        s = df[TARGET_COL]
+        if not pd.api.types.is_numeric_dtype(s):
+            df[TARGET_COL] = (
+                s.astype(str)
+                .str.strip()
+                .str.lower()
+                .map({"yes": 1, "true": 1, "1": 1, "no": 0, "false": 0, "0": 0})
+                .fillna(0)
+                .astype(int)
+            )
+        else:
+            df[TARGET_COL] = s.astype(int)
 
     df = df.drop(columns=[ID_COL], errors="ignore")
 

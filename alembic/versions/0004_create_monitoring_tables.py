@@ -60,9 +60,7 @@ def upgrade() -> None:
             nullable=False,
             comment="Format: {model_name}:{version}, e.g. churn-model:v1",
         ),
-        sa.Column(
-            "window_start", sa.DateTime(timezone=True), nullable=False
-        ),
+        sa.Column("window_start", sa.DateTime(timezone=True), nullable=False),
         sa.Column("window_end", sa.DateTime(timezone=True), nullable=False),
         sa.Column("precision", sa.Float(), nullable=True),
         sa.Column("recall", sa.Float(), nullable=True),
