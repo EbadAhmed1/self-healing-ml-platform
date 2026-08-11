@@ -45,7 +45,14 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
     from app.config import get_settings
 
     settings = get_settings()
-    if not settings.use_hf_hub or not settings.hf_repo_id:
+    if not settings.use_hf_hub:
+        return
+
+    if not settings.hf_repo_id:
+        log.warning(
+            "USE_HF_HUB is set to True, but HF_REPO_ID is empty! "
+            "Set HF_REPO_ID in your environment variables on Render (e.g. ebadahmdd/self-healing-ml-platform-models)."
+        )
         return
 
     try:
@@ -80,8 +87,12 @@ def download_from_hf_hub(model_name: str, registry_path: Path) -> None:
         shutil.copy(artifact_file, version_dir / ARTIFACT_FILENAME)
         log.info("Successfully fetched %s:%s from HF Hub", model_name, version)
     except Exception as exc:
-        log.warning(
-            "Hugging Face Hub fetch failed (%s) — falling back to local files", exc
+        log.error(
+            "Hugging Face Hub fetch failed for %s from %s: %s",
+            model_name,
+            settings.hf_repo_id,
+            exc,
+            exc_info=True,
         )
 
 

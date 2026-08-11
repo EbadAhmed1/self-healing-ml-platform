@@ -141,7 +141,17 @@ class ChurnInput(BaseModel):
 class ChurnPrediction(BaseModel):
     """Response returned by POST /predict/churn-model."""
 
-    model_config = {"protected_namespaces": ()}
+    model_config = {
+        "protected_namespaces": (),
+        "json_schema_extra": {
+            "example": {
+                "prediction": False,
+                "prediction_label": "No Churn",
+                "confidence": 0.812,
+                "model_id": "churn-model:v1",
+            }
+        },
+    }
 
     prediction: bool = Field(..., description="True = churn predicted.")
     prediction_label: str = Field(
@@ -151,17 +161,6 @@ class ChurnPrediction(BaseModel):
         ..., ge=0.0, le=1.0, description="Probability of the predicted class."
     )
     model_id: str = Field(..., description="Model identifier used for this prediction.")
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "prediction": False,
-                "prediction_label": "No Churn",
-                "confidence": 0.812,
-                "model_id": "churn-model:v1",
-            }
-        }
-    }
 
 
 # ---------------------------------------------------------------------------
