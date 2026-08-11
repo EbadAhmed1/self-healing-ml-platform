@@ -26,7 +26,6 @@ def upgrade() -> None:
             "model_id",
             sa.String(128),
             nullable=False,
-            index=True,
             comment="Format: {model_name}:{version}, e.g. churn-model:v1",
         ),
         sa.Column(

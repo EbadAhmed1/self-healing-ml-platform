@@ -26,7 +26,6 @@ def upgrade() -> None:
             "event_type",
             sa.String(64),
             nullable=False,
-            index=True,
             comment="One of: drift_feature, drift_category, label_delay_spike, corrupt_feature, stop",
         ),
         sa.Column(

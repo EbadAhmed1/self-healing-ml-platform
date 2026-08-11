@@ -34,7 +34,6 @@ def upgrade() -> None:
             "incident_id",
             sa.String(36),
             nullable=False,
-            index=True,
             comment="Associated incident ticket ID",
         ),
         sa.Column(

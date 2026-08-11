@@ -26,7 +26,6 @@ def upgrade() -> None:
             "prediction_id",
             sa.String(36),
             nullable=False,
-            index=True,
             comment="ID of the corresponding predictions row (not enforced FK)",
         ),
         sa.Column(

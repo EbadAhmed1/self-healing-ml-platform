@@ -27,14 +27,12 @@ def upgrade() -> None:
             "model_id",
             sa.String(128),
             nullable=False,
-            index=True,
             comment="Format: {model_name}:{version}, e.g. churn-model:v1",
         ),
         sa.Column(
             "feature_name",
             sa.String(128),
             nullable=False,
-            index=True,
             comment="Feature column name or '_prediction' for model outputs",
         ),
         sa.Column(
@@ -60,13 +58,12 @@ def upgrade() -> None:
             "model_id",
             sa.String(128),
             nullable=False,
-            index=True,
             comment="Format: {model_name}:{version}, e.g. churn-model:v1",
         ),
         sa.Column(
-            "window_start", sa.DateTime(timezone=True), nullable=False, index=True
+            "window_start", sa.DateTime(timezone=True), nullable=False
         ),
-        sa.Column("window_end", sa.DateTime(timezone=True), nullable=False, index=True),
+        sa.Column("window_end", sa.DateTime(timezone=True), nullable=False),
         sa.Column("precision", sa.Float(), nullable=True),
         sa.Column("recall", sa.Float(), nullable=True),
         sa.Column("f1", sa.Float(), nullable=True),
@@ -89,21 +86,18 @@ def upgrade() -> None:
             "model_id",
             sa.String(128),
             nullable=False,
-            index=True,
             comment="Format: {model_name}:{version}, e.g. churn-model:v1",
         ),
         sa.Column(
             "alert_type",
             sa.String(64),
             nullable=False,
-            index=True,
             comment="One of: feature_drift, prediction_drift, accuracy_drop, high_null_rate",
         ),
         sa.Column(
             "severity",
             sa.String(32),
             nullable=False,
-            index=True,
             comment="Severity level: info, warning, critical",
         ),
         sa.Column(

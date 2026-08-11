@@ -52,7 +52,6 @@ def upgrade() -> None:
             "model_name",
             sa.String(64),
             nullable=False,
-            index=True,
             comment="Model name (e.g. churn-model)",
         ),
         sa.Column("candidate_version", sa.String(64), nullable=False),
@@ -80,7 +79,6 @@ def upgrade() -> None:
             sa.String(32),
             server_default="active",
             nullable=False,
-            index=True,
         ),
         sa.Column(
             "started_at",
