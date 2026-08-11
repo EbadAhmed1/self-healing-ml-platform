@@ -17,7 +17,7 @@ scikit-learn==1.9.0
 numpy==2.5.2
 pandas==3.0.5
 joblib==1.4.2
-scipy==1.13.1           # statistical tests in simulator + drift detection
+scipy==1.18.0           # statistical tests in simulator + drift detection
 
 # Config / env
 python-dotenv==1.0.1
