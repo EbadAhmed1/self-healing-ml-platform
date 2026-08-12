@@ -226,17 +226,15 @@ def get_accuracy_history(_engine: Engine, model_name: str) -> pd.DataFrame:
         """
         SELECT
             model_id,
-            window_size,
-            sample_size,
-            accuracy,
+            n_samples AS sample_size,
             precision,
             recall,
             f1,
             roc_auc,
-            checked_at
+            created_at AS checked_at
         FROM accuracy_reports
         WHERE model_id LIKE :pattern
-        ORDER BY checked_at ASC
+        ORDER BY created_at ASC
         """
     )
     try:
@@ -264,7 +262,7 @@ def get_incidents_history(_engine: Engine, model_name: str) -> pd.DataFrame:
             hypothesis,
             confidence,
             status,
-            action_taken,
+            recommended_action AS action_taken,
             llm_explanation,
             created_at,
             evidence
