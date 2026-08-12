@@ -1,0 +1,8 @@
+# Streamlit Dashboard minimal requirements (prevents Streamlit Cloud build OOM)
+streamlit==1.36.0
+pandas==2.2.2
+sqlalchemy==2.0.31
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.3.4
