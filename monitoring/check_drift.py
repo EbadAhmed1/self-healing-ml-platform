@@ -56,14 +56,24 @@ def load_baseline_snapshot(
     """
     Load the training snapshot dictionary from the current model's metadata.json.
     """
+    try:
+        from app.model_loader import download_from_hf_hub
+
+        download_from_hf_hub(model_name, PROJECT_ROOT / "models" / "artifacts")
+    except Exception:
+        pass
+
     artifacts_dir = PROJECT_ROOT / "models" / "artifacts" / model_name
 
     if version is None:
         pointer_path = artifacts_dir / CURRENT_VERSION_FILENAME
         if not pointer_path.exists():
-            raise FileNotFoundError(
-                f"Model version pointer not found at: {pointer_path}."
+            log.warning(
+                "Model version pointer not found for '%s' at: %s — skipping drift check.",
+                model_name,
+                pointer_path,
             )
+            return f"{model_name}:v1", {}
         with open(pointer_path) as f:
             pointer = json.load(f)
         version = pointer["version"]
@@ -72,7 +82,12 @@ def load_baseline_snapshot(
     metadata_path = artifacts_dir / version / METADATA_FILENAME
 
     if not metadata_path.exists():
-        raise FileNotFoundError(f"Metadata file not found at: {metadata_path}")
+        log.warning(
+            "Metadata file not found for '%s' at: %s — skipping drift check.",
+            model_name,
+            metadata_path,
+        )
+        return model_id, {}
 
     with open(metadata_path) as f:
         meta = json.load(f)

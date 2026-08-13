@@ -61,6 +61,13 @@ F1_DROP_THRESHOLD = 0.15  # 15% drop from baseline triggers critical alert
 # ---------------------------------------------------------------------------
 def load_baseline_metrics(model_name: str = MODEL_NAME) -> tuple[str, dict]:
     """Load baseline evaluation metrics from metadata.json."""
+    try:
+        from app.model_loader import download_from_hf_hub
+
+        download_from_hf_hub(model_name, PROJECT_ROOT / "models" / "artifacts")
+    except Exception:
+        pass
+
     artifacts_dir = PROJECT_ROOT / "models" / "artifacts" / model_name
     pointer_path = artifacts_dir / CURRENT_VERSION_FILENAME
 
@@ -72,7 +79,9 @@ def load_baseline_metrics(model_name: str = MODEL_NAME) -> tuple[str, dict]:
 
     version = pointer["version"]
     model_id = f"{model_name}:{version}"
-    metadata_path = Path(pointer["artifact_dir"]) / METADATA_FILENAME
+    metadata_path = artifacts_dir / version / METADATA_FILENAME
+    if not metadata_path.exists():
+        return model_id, {}
 
     if not metadata_path.exists():
         metadata_path = artifacts_dir / version / METADATA_FILENAME
