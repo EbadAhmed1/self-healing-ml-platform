@@ -352,6 +352,12 @@ def run_retraining_pipeline(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Automated ML Retraining Pipeline")
     parser.add_argument(
+        "--model-name",
+        type=str,
+        default=MODEL_NAME,
+        help="Tenant model name to retrain (e.g. churn-model, fraud-model).",
+    )
+    parser.add_argument(
         "--version", type=str, default=None, help="Candidate version tag (e.g. v2)"
     )
     parser.add_argument(

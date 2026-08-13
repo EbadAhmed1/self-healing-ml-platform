@@ -167,5 +167,14 @@ def evaluate_canary_deployment(db_session_factory=SessionLocal) -> dict:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Canary Deployment Manager")
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default=MODEL_NAME,
+        help="Tenant model name (e.g. churn-model, fraud-model).",
+    )
+    args = parser.parse_args()
+
     res = evaluate_canary_deployment()
     print(json.dumps(res, indent=2))
