@@ -103,6 +103,7 @@ def run_accuracy_check(
     hours: int = 24,
     min_samples: int = DEFAULT_MIN_SAMPLES,
     target_model_id: str | None = None,
+    model_name: str = MODEL_NAME,
     db_session_factory=SessionLocal,
 ) -> AccuracyReport | None:
     """
@@ -112,7 +113,7 @@ def run_accuracy_check(
         AccuracyReport ORM instance if evaluation ran, or None if skipped
         due to insufficient sample size.
     """
-    model_id, baseline_metrics = load_baseline_metrics()
+    model_id, baseline_metrics = load_baseline_metrics(model_name=model_name)
     if target_model_id:
         model_id = target_model_id
 
@@ -247,6 +248,12 @@ def _make_parser() -> argparse.ArgumentParser:
         help="Minimum required prediction-outcome pairs before generating a report.",
     )
     parser.add_argument(
+        "--model-name",
+        type=str,
+        default=MODEL_NAME,
+        help="Tenant model name to evaluate (e.g. churn-model, fraud-model).",
+    )
+    parser.add_argument(
         "--model-id",
         type=str,
         default=None,
@@ -266,5 +273,8 @@ if __name__ == "__main__":
     )
 
     run_accuracy_check(
-        hours=args.hours, min_samples=args.min_samples, target_model_id=args.model_id
+        hours=args.hours,
+        min_samples=args.min_samples,
+        target_model_id=args.model_id,
+        model_name=args.model_name,
     )
