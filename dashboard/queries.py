@@ -46,14 +46,18 @@ def get_available_models(_engine: Engine) -> list[str]:
     sql = text(
         """
         SELECT DISTINCT
-            SPLIT_PART(model_id, ':', 1) AS model_name
+            CASE
+                WHEN model_id LIKE '%:%' THEN SPLIT_PART(model_id, ':', 1)
+                ELSE model_id
+            END AS model_name
         FROM deployments
-        WHERE model_id LIKE '%:%'
         UNION
         SELECT DISTINCT
-            SPLIT_PART(model_id, ':', 1) AS model_name
+            CASE
+                WHEN model_id LIKE '%:%' THEN SPLIT_PART(model_id, ':', 1)
+                ELSE model_id
+            END AS model_name
         FROM predictions
-        WHERE model_id LIKE '%:%'
         """
     )
     # SQLite fallback query if SPLIT_PART isn't available
@@ -98,7 +102,7 @@ def get_model_summary(_engine: Engine, model_name: str) -> dict[str, Any]:
         "alerts_24h": 0,
         "open_incidents": 0,
     }
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
 
     try:
         with _engine.connect() as conn:
@@ -161,7 +165,7 @@ def get_deployment_history(_engine: Engine, model_name: str) -> pd.DataFrame:
     """
     Fetch deployment timeline history for the selected tenant model.
     """
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
     sql = text(
         """
         SELECT
@@ -190,7 +194,7 @@ def get_drift_history(_engine: Engine, model_name: str) -> pd.DataFrame:
     """
     Fetch drift PSI scores over time for all features of the selected tenant model.
     """
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
     sql = text(
         """
         SELECT
@@ -221,7 +225,7 @@ def get_accuracy_history(_engine: Engine, model_name: str) -> pd.DataFrame:
     """
     Fetch rolling accuracy and performance metrics over time for the selected tenant model.
     """
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
     sql = text(
         """
         SELECT
@@ -253,7 +257,7 @@ def get_incidents_history(_engine: Engine, model_name: str) -> pd.DataFrame:
     """
     Fetch incident tickets with evidence and LLM explanations for the selected model.
     """
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
     sql = text(
         """
         SELECT
@@ -287,7 +291,7 @@ def get_prediction_volume(_engine: Engine, model_name: str) -> pd.DataFrame:
     """
     Fetch time-series prediction counts for the selected tenant model.
     """
-    pattern = f"{model_name}:%"
+    pattern = f"{model_name}%"
     sql = text(
         """
         SELECT
