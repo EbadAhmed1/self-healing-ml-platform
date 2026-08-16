@@ -355,7 +355,9 @@ def run_simulation(args: argparse.Namespace) -> None:
                     effective_delay = args.outcome_delay * state.delay_multiplier
                     import uuid
 
-                    prediction_id = body.get("prediction_id") or body.get("id") or str(uuid.uuid4())
+                    prediction_id = (
+                        body.get("prediction_id") or body.get("id") or str(uuid.uuid4())
+                    )
 
                     writer.enqueue(
                         prediction_id=prediction_id,
