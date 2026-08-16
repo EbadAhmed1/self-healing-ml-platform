@@ -22,8 +22,18 @@ import logging
 import sys
 from pathlib import Path
 
+import os
+
 import pandas as pd
 import streamlit as st
+
+# ── Inject Streamlit Cloud Secrets into os.environ for pydantic-settings ────
+try:
+    for s_key in ("DATABASE_URL", "database_url", "API_BASE_URL", "api_base_url"):
+        if s_key in st.secrets and s_key.upper() not in os.environ:
+            os.environ[s_key.upper()] = str(st.secrets[s_key])
+except Exception:
+    pass
 
 # ── Make project root importable ──────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
