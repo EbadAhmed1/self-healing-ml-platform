@@ -171,7 +171,7 @@ def render_accuracy_tab(model_name: str) -> None:
     selected_metrics = st.multiselect(
         "Select Performance Metrics to Display",
         options=available_metrics,
-        default=["f1", "accuracy", "roc_auc"],
+        default=[m for m in ["f1", "accuracy", "roc_auc"] if m in available_metrics],
     )
 
     if not selected_metrics:
