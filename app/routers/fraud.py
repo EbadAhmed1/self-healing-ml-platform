@@ -58,7 +58,10 @@ def predict_fraud(
 
     # Log to shared predictions table with model_id="fraud-model:v1"
     try:
+        import uuid
+
         record = Prediction(
+            id=str(uuid.uuid4()),
             model_id=model_id,
             input_features=payload.model_dump(),
             prediction=prediction_bool,
