@@ -101,4 +101,5 @@ def predict_churn(
         prediction_label="Churn" if prediction_bool else "No Churn",
         confidence=confidence,
         model_id=model_id,
+        prediction_id=record.id if 'record' in locals() else None,
     )

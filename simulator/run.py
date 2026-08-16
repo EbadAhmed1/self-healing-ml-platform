@@ -350,16 +350,12 @@ def run_simulation(args: argparse.Namespace) -> None:
                 elif response.status_code == 200:
                     total_ok += 1
                     body = response.json()
-                    prediction_id = None  # extract from response if API returns it
 
-                    # Queue the delayed outcome
+                    # Queue the delayed outcome using the actual DB prediction_id returned by API
                     effective_delay = args.outcome_delay * state.delay_multiplier
-                    # We use a synthetic UUID as prediction_id since the serving
-                    # API doesn't return its DB row ID in the response.
-                    # Phase 3 will correlate by timestamp window instead.
                     import uuid
 
-                    prediction_id = str(uuid.uuid4())  # placeholder — see note below
+                    prediction_id = body.get("prediction_id") or body.get("id") or str(uuid.uuid4())
 
                     writer.enqueue(
                         prediction_id=prediction_id,

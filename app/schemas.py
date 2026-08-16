@@ -161,6 +161,9 @@ class ChurnPrediction(BaseModel):
         ..., ge=0.0, le=1.0, description="Probability of the predicted class."
     )
     model_id: str = Field(..., description="Model identifier used for this prediction.")
+    prediction_id: str | None = Field(
+        default=None, description="Database UUID primary key for this prediction record."
+    )
 
 
 # ---------------------------------------------------------------------------
