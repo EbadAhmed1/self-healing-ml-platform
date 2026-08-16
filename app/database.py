@@ -32,6 +32,9 @@ def _make_engine():
         kwargs["pool_size"] = 5
         kwargs["max_overflow"] = 10
         kwargs["pool_recycle"] = 1800
+        # Automatically set sslmode=require for Supabase cloud PostgreSQL
+        if "supabase.com" in url or "pooler" in url:
+            connect_args["sslmode"] = "require"
 
     return create_engine(url, connect_args=connect_args, **kwargs)
 
