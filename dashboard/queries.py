@@ -231,7 +231,6 @@ def get_accuracy_history(_engine: Engine, model_name: str) -> pd.DataFrame:
         SELECT
             model_id,
             n_samples AS sample_size,
-            accuracy,
             precision,
             recall,
             f1,

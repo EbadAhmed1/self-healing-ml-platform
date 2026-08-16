@@ -165,13 +165,13 @@ def render_accuracy_tab(model_name: str) -> None:
         st.info("No accuracy reports recorded yet for this model.")
         return
 
-    metrics_to_plot = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+    metrics_to_plot = ["f1", "precision", "recall", "roc_auc"]
     available_metrics = [m for m in metrics_to_plot if m in acc_df.columns]
 
     selected_metrics = st.multiselect(
         "Select Performance Metrics to Display",
         options=available_metrics,
-        default=[m for m in ["f1", "accuracy", "roc_auc"] if m in available_metrics],
+        default=[m for m in ["f1", "precision", "roc_auc"] if m in available_metrics],
     )
 
     if not selected_metrics:
