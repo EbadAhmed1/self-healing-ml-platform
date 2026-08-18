@@ -125,8 +125,11 @@ def process_unprocessed_alerts(db_session_factory=SessionLocal) -> list:
 
         # Expunge incidents so returned objects are safe to access after session close
         for inc in incidents:
-            db.refresh(inc)
-            db.expunge(inc)
+            try:
+                db.refresh(inc)
+                db.expunge(inc)
+            except Exception:
+                pass
 
         return incidents
 

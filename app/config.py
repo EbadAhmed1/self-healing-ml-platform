@@ -38,7 +38,7 @@ class Settings(BaseSettings):
 
     # LLM / Diagnosis Agent (Phase 5)
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "llama-3.1-8b-instant"
 
     # Hugging Face Hub Model Registry (Phase 9 Cloud Registry)
     use_hf_hub: bool = False
