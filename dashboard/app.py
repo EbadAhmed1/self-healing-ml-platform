@@ -53,13 +53,92 @@ from dashboard.queries import (  # noqa: E402
 log = logging.getLogger("dashboard.app")
 
 # ---------------------------------------------------------------------------
-# Streamlit Page Config
+# Streamlit Page Config & Custom Styling
 # ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="Self-Healing ML Platform",
-    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
+)
+
+# Custom Enterprise CSS
+st.markdown(
+    """
+    <style>
+    /* Global Font & Spacing */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        max-width: 1200px;
+    }
+    
+    /* Clean Cards */
+    .metric-card {
+        background-color: #ffffff;
+        border: 1px solid #eaecf0;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 1px 3px rgba(16,24,40,0.05);
+    }
+    .metric-title {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #475467;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .metric-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #101828;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Status Badges */
+    .badge {
+        font-size: 0.72rem;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .badge-success {
+        background-color: #ecfdf3;
+        color: #027a48;
+        border: 1px solid #abefc6;
+    }
+    .badge-warning {
+        background-color: #fffaeb;
+        color: #b54708;
+        border: 1px solid #fedf89;
+    }
+    .badge-neutral {
+        background-color: #f2f4f7;
+        color: #344054;
+        border: 1px solid #e4e7ec;
+    }
+    
+    /* Header Styling */
+    .app-header {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #101828;
+        margin-bottom: 0.25rem;
+    }
+    .app-subheader {
+        font-size: 0.95rem;
+        color: #475467;
+        margin-bottom: 1.5rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 
@@ -67,7 +146,7 @@ st.set_page_config(
 # Sidebar & Tenant Selection
 # ---------------------------------------------------------------------------
 def render_sidebar() -> str:
-    st.sidebar.title("🛡️ Platform Control")
+    st.sidebar.title("Platform Control")
     st.sidebar.markdown("---")
 
     available_models = get_available_models(engine)
@@ -79,7 +158,7 @@ def render_sidebar() -> str:
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.subheader("🔄 Live Refresh")
+    st.sidebar.subheader("Live Telemetry")
     if st.sidebar.button("Refresh Telemetry Now", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
@@ -95,23 +174,68 @@ def render_sidebar() -> str:
 # Overview Metrics Bar
 # ---------------------------------------------------------------------------
 def render_metrics_summary(summary: dict) -> None:
+    version_val = summary["active_version"]
+    status_str = summary["status"].upper()
+
+    if status_str in ("DEPLOYED", "CURRENT", "ACTIVE"):
+        badge_html = f'<span class="badge badge-success">{status_str}</span>'
+    elif status_str == "CANARY":
+        badge_html = f'<span class="badge badge-warning">CANARY {summary["traffic_percentage"]:.0f}%</span>'
+    else:
+        badge_html = f'<span class="badge badge-neutral">{status_str}</span>'
+
     col1, col2, col3, col4 = st.columns(4)
 
-    version_label = summary["active_version"]
-    if summary["status"] == "canary":
-        version_label += f" (Canary {summary['traffic_percentage']}%)"
+    with col1:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-title">Active Version</div>
+                <div class="metric-value">{version_val} {badge_html}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    col1.metric("Active Version", version_label, summary["status"].upper())
-    col2.metric("Total Predictions", f"{summary['total_predictions']:,}")
-    col3.metric("Alerts (24h)", summary["alerts_24h"])
-    col4.metric("Open Incidents", summary["open_incidents"])
+    with col2:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-title">Total Predictions</div>
+                <div class="metric-value">{summary['total_predictions']:,}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col3:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-title">Alerts (24h)</div>
+                <div class="metric-value">{summary['alerts_24h']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col4:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-title">Open Incidents</div>
+                <div class="metric-value">{summary['open_incidents']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 # ---------------------------------------------------------------------------
 # Tab 1: Feature Drift Visualizations
 # ---------------------------------------------------------------------------
 def render_drift_tab(model_name: str) -> None:
-    st.subheader(f"📊 Feature & Output Drift Trends — {model_name}")
+    st.subheader(f"Feature & Output Drift Trends — {model_name}")
 
     drift_df = get_drift_history(engine, model_name)
     if drift_df.empty:
@@ -158,7 +282,7 @@ def render_drift_tab(model_name: str) -> None:
 # Tab 2: Performance & Accuracy Metrics
 # ---------------------------------------------------------------------------
 def render_accuracy_tab(model_name: str) -> None:
-    st.subheader(f"📈 Rolling Model Accuracy & Performance — {model_name}")
+    st.subheader(f"Rolling Model Accuracy & Performance — {model_name}")
 
     acc_df = get_accuracy_history(engine, model_name)
     if acc_df.empty:
@@ -192,7 +316,7 @@ def render_accuracy_tab(model_name: str) -> None:
 # Tab 3: Incidents & Diagnosis Layer
 # ---------------------------------------------------------------------------
 def render_incidents_tab(model_name: str) -> None:
-    st.subheader(f"🚨 Incident Tickets & Diagnosis Agent — {model_name}")
+    st.subheader(f"Incident Tickets & Diagnosis Agent — {model_name}")
 
     inc_df = get_incidents_history(engine, model_name)
     if inc_df.empty:
@@ -213,11 +337,15 @@ def render_incidents_tab(model_name: str) -> None:
         use_container_width=True,
     )
 
-    st.markdown("### 🔍 Detailed Incident Reasoning & LLM Explanations")
+    st.markdown("### Detailed Incident Reasoning & LLM Explanations")
     for idx, row in inc_df.iterrows():
-        status_icon = "🔴" if row["status"] in ("investigating", "escalated") else "🟢"
+        status_tag = (
+            "[ACTIVE]"
+            if row["status"] in ("investigating", "escalated")
+            else "[RESOLVED]"
+        )
         with st.expander(
-            f"{status_icon} Incident #{row['id']} — {row['hypothesis']} (Confidence: {row['confidence']:.2f})"
+            f"{status_tag} Incident #{row['id']} — {row['hypothesis']} (Confidence: {row['confidence']:.2f})"
         ):
             c1, c2 = st.columns(2)
             c1.write(f"**Status:** `{row['status']}`")
@@ -226,7 +354,7 @@ def render_incidents_tab(model_name: str) -> None:
             c2.write(f"**Logged At:** `{row['created_at']}`")
 
             st.markdown("---")
-            st.markdown("**🤖 LLM Human-Readable Explanation:**")
+            st.markdown("**LLM Human-Readable Explanation:**")
             explanation = row.get("llm_explanation")
             if explanation and pd.notna(explanation):
                 st.info(explanation)
@@ -235,7 +363,7 @@ def render_incidents_tab(model_name: str) -> None:
                     "No LLM explanation generated (auto-resolved by rule-based agent)."
                 )
 
-            st.markdown("**📋 Raw Evidence Context:**")
+            st.markdown("**Raw Evidence Context:**")
             evidence = row.get("evidence")
             if evidence:
                 try:
@@ -252,12 +380,12 @@ def render_incidents_tab(model_name: str) -> None:
 # Tab 4: Deployments & Traffic Volume
 # ---------------------------------------------------------------------------
 def render_deployments_tab(model_name: str) -> None:
-    st.subheader(f"🚀 Deployments & Prediction Traffic Volume — {model_name}")
+    st.subheader(f"Deployments & Prediction Traffic Volume — {model_name}")
 
     c1, c2 = st.columns(2)
 
     with c1:
-        st.markdown("### 📋 Deployment History")
+        st.markdown("### Deployment History")
         dep_df = get_deployment_history(engine, model_name)
         if dep_df.empty:
             st.info("No deployment history found.")
@@ -265,7 +393,7 @@ def render_deployments_tab(model_name: str) -> None:
             st.dataframe(dep_df, use_container_width=True)
 
     with c2:
-        st.markdown("### 📊 Prediction Volume (Sanity Check)")
+        st.markdown("### Prediction Volume")
         vol_df = get_prediction_volume(engine, model_name)
         if vol_df.empty:
             st.info("No prediction traffic recorded yet.")
@@ -283,20 +411,26 @@ def render_deployments_tab(model_name: str) -> None:
 def main() -> None:
     selected_model = render_sidebar()
 
-    st.title(f"🛡️ Self-Healing ML Platform — {selected_model}")
-    st.markdown("---")
+    st.markdown(
+        f'<div class="app-header">Self-Healing ML Platform — {selected_model}</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="app-subheader">Continuous Telemetry, PSI Drift Detection & Autonomous LLM Operations</div>',
+        unsafe_allow_html=True,
+    )
 
     summary = get_model_summary(engine, selected_model)
     render_metrics_summary(summary)
 
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4 = st.tabs(
         [
-            "📊 Feature Drift",
-            "📈 Performance & Accuracy",
-            "🚨 Incidents & Diagnosis",
-            "🚀 Deployments & Traffic",
+            "Feature Drift",
+            "Performance & Accuracy",
+            "Incidents & Diagnosis",
+            "Deployments & Traffic",
         ]
     )
 
